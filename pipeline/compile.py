@@ -83,27 +83,60 @@ PLAN_SYS = """\
 You are a knowledge-base compiler. Identify 6-8 distinct technical concepts from \
 the source material that each deserve their own wiki article.
 
-Output ONLY a JSON array, no markdown fences, no explanation:
-[{"slug": "kebab-case", "title": "Human Title", "summary": "one sentence"}, ...]"""
+Output ONLY a valid JSON array. No markdown fences, no explanation, no extra text.
+Each element must have exactly these three fields:
+  "slug"    — kebab-case identifier, e.g. "event-loop"
+  "title"   — human-readable title, e.g. "Event Loop"
+  "summary" — one sentence description
+
+Example output:
+[{"slug": "event-loop", "title": "Event Loop", "summary": "The core async execution model."}, \
+{"slug": "memory-layer", "title": "Memory Layer", "summary": "Persistent context store."}]"""
+
+
+def _normalize_concept(c: dict) -> dict | None:
+    """Normalize variant formats the model may emit into {slug, title, summary}."""
+    # Already correct
+    if "slug" in c:
+        return c
+    # "name" + optional "arguments" sub-dict (function-call style)
+    name = c.get("name") or c.get("title") or c.get("concept") or c.get("id") or ""
+    if not name:
+        return None
+    args = c.get("arguments", {}) if isinstance(c.get("arguments"), dict) else {}
+    slug = re.sub(r"[^a-z0-9]+", "-", name.strip().lower()).strip("-")
+    title = args.get("title") or name.replace("-", " ").title()
+    summary = args.get("summary") or args.get("description") or c.get("summary") or c.get("description") or ""
+    return {"slug": slug, "title": title, "summary": summary}
 
 
 def stage_plan(raw_files: dict, kb: str) -> list[dict]:
     raw = call_llm(PLAN_SYS, f"Source:\n\n{corpus(raw_files, MAX_CHARS_PLAN)}",
                    PLAN_MAX_TOKENS, "planning concepts")
-    chunk = raw.strip().lstrip("```json").lstrip("```").rstrip("```").strip()
+    chunk = raw.strip()
+    # Strip markdown fences if present
+    chunk = re.sub(r'^```[a-z]*\n?', '', chunk).rstrip('`').strip()
     start = chunk.find("[")
     if start == -1:
         print(f"\n[error] No JSON array.\nRaw:\n{raw[:300]}")
         sys.exit(1)
     chunk = chunk[start:]
+    # Try to find the closing bracket (truncate at last valid ']')
+    end = chunk.rfind("]")
+    if end != -1:
+        chunk = chunk[:end + 1]
     try:
-        concepts = json.loads(chunk)
+        raw_concepts = json.loads(chunk)
     except json.JSONDecodeError:
-        concepts = [json.loads(m.group()) for m in re.finditer(r'\{[^{}]+\}', chunk, re.DOTALL)
-                    if "slug" in m.group()]
-        if not concepts:
+        raw_concepts = [json.loads(m.group()) for m in re.finditer(r'\{[^{}]+\}', chunk, re.DOTALL)
+                        if any(k in m.group() for k in ("slug", "name", "title", "concept"))]
+        if not raw_concepts:
             print(f"\n[error] Could not parse concepts.\nRaw:\n{chunk[:300]}")
             sys.exit(1)
+    concepts = [n for c in raw_concepts if (n := _normalize_concept(c)) is not None]
+    if not concepts:
+        print(f"\n[error] Normalization yielded no concepts.\nRaw:\n{chunk[:300]}")
+        sys.exit(1)
     print(f"\n  [plan] {len(concepts)} concepts for [{kb}]:")
     for c in concepts:
         print(f"    - {c['slug']}")
