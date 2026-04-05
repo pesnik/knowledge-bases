@@ -1,0 +1,14 @@
+{
+	"nodes":[
+		{"id":"5422260b43020204","x":-587,"y":-287,"width":400,"height":400,"type":"file","file":"wiki/concepts/agent-harness.md"},
+		{"id":"1f976230aca0a0e3","x":-142,"y":-287,"width":400,"height":400,"type":"file","file":"wiki/concepts/claude-code-harness.md"},
+		{"id":"9168981b12a47420","x":303,"y":-287,"width":400,"height":400,"type":"file","file":"wiki/concepts/context-management.md"},
+		{"id":"ab5504b564fe265a","x":748,"y":-287,"width":400,"height":400,"type":"file","file":"wiki/concepts/frameworks.md"},
+		{"id":"b262ff8545181f17","x":1193,"y":-287,"width":400,"height":400,"type":"file","file":"wiki/concepts/harness-patterns.md"},
+		{"id":"b7f2fb8812f4fa2b","x":1638,"y":-287,"width":400,"height":400,"type":"file","file":"wiki/index.md"},
+		{"id":"d23e125a610d7ddb","x":2083,"y":-287,"width":400,"height":400,"type":"file","file":"wiki/log.md"},
+		{"id":"cd7c8fa4da59be07","x":2528,"y":-287,"width":400,"height":400,"type":"file","file":"wiki/concepts/permission-system.md"},
+		{"id":"3f53f55f7452f834","x":2973,"y":-287,"width":400,"height":400,"type":"file","file":"wiki/concepts/subagents.md"}
+	],
+	"edges":[]
+}
