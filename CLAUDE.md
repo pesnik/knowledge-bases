@@ -68,7 +68,7 @@ p.write_text(json.dumps(c, indent=2))
 
 **`temp` kwarg error (mlx_lm ≥ 0.31):** Use `sampler=make_sampler(temp=0.2)` from `mlx_lm.sample_utils`.
 
-Full reference: `~/Pesnik/skills/infrastructure/mlx-lm-local/SKILL.md`
+Full reference: [pesnik/skills — mlx-lm-local](https://github.com/pesnik/skills/blob/master/infrastructure/mlx-lm-local/SKILL.md)
 
 ---
 

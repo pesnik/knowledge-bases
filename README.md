@@ -82,4 +82,4 @@ mkdir -p knowledge-bases/<topic>/{raw,wiki/concepts,pipeline}
 | Hardware | Apple M3 Pro, 18GB unified memory |
 | Memory budget | 12.7GB weights + ~3.5GB KV (kv_bits=8) |
 
-See [`~/Pesnik/skills/infrastructure/mlx-lm-local/SKILL.md`](../skills/infrastructure/mlx-lm-local/SKILL.md) for all machine-specific fixes.
+See [pesnik/skills — mlx-lm-local](https://github.com/pesnik/skills/blob/master/infrastructure/mlx-lm-local/SKILL.md) for all machine-specific fixes.
